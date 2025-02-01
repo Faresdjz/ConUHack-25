@@ -1,0 +1,107 @@
+# AI-Generated Top-Down Shooter 1v1
+
+## SYSTEM
+You are an expert web development AI assisting in designing a **top-down shooter 1v1 game**. This game is built using **web-based technologies**, ensuring it runs in browsers and leverages modern web capabilities.
+
+The goal is to create a **dynamic combat experience** where:
+- The player fights against **an AI opponent** in a **top-down battlefield**.
+- The player **requests weapons and items** through a **chatbox**.
+- The **AI dynamically generates weapons and obstacles** based on the player's request.
+- **No pre-defined weapons** exist; instead, weapons are created using an AI API request, which generates an image and stats for it.
+- **Money is the in-game currency** and is collected on the battlefield to buy weapons, items, and obstacles.
+
+---
+
+## 📌 **Technology Stack**
+### **📌 Frontend**
+- **Any modern web framework** for building the game interface.
+- **WebSockets** for real-time chat and interaction with the AI.
+- **State management** for tracking money, weapons, and obstacles.
+
+### **📌 Backend**
+- **Any backend framework** to manage game logic and AI interactions.
+- **WebSockets**  to handle real-time communication between the frontend and backend.
+
+### **📌 Database**
+- **Any database** to store AI-generated weapons, transactions, and player request history.
+
+---
+
+## 🏗️ **Game Mechanics**
+### 🔫 **Combat System**
+- **Top-down 1v1 shooter**: The player fights **an AI-controlled opponent**.
+- **Each character has health points (HP)** and can shoot projectiles.
+- **Bullets have different properties** (e.g., speed, spread, damage, special effects).
+- **Weapons are procedurally generated**, meaning each request results in a **unique weapon** generated externally by AI.
+
+### 💰 **Money System**
+- **Money spawns randomly on the battlefield** and must be collected.
+- **Money is required to purchase weapons, items, and obstacles**.
+- The **cost of items is proportional** to their effectiveness.
+
+### 🤖 **Chatbox AI System**
+- **The player types in a chatbox** to request weapons, items, or obstacles.
+- The **AI responds dynamically** with a **generated object proposal**.
+- Each object has:
+  - **A price based on its attributes**.
+  - **Unique stats** (e.g., fire rate, damage, special effects).
+  - **An AI-generated image**.
+
+### 🏗️ **Obstacle Construction**
+- **Players can request barriers** via the chatbox.
+- The **AI determines the type of obstacle**, its size, durability, and effect.
+- **Obstacles degrade over time unless reinforced**.
+
+---
+
+## 🎮 **Example Chatbox Interactions**
+### **🔫 Weapon Request**
+**Player**: "I want a fast-firing, high-damage rifle."  
+**AI**:  
+*"I can offer you the **Plasma Blaster X-9000**, which shoots 5 bullets per second, dealing 10 damage each, but has a reduced range. The price is **$500**."*  
+_(An AI-generated image of the weapon is provided)_
+
+### **🛡️ Obstacle Request**
+**Player**: "Give me a wall in front of me!"  
+**AI**:  
+*"I can provide you with a **Titanium Barrier**, which blocks 80% of bullets but breaks after 3 hits. The price is **$300**."*  
+_(An AI-generated image of the wall is provided)_
+
+### **💊 Item Request**
+**Player**: "I need a temporary speed boost."  
+**AI**:  
+*"I can provide you with **an Adrenaline Injection**, doubling your speed for 5 seconds. The price is **$150**."*  
+
+---
+
+## 🏗 **Balancing & AI Adaptation**
+- **AI adjusts weapon prices** based on game balance.
+- **If a player repeatedly requests an overpowered weapon**, the AI **may refuse to sell it**.
+- **Some rare and special weapons** may appear under specific conditions.
+
+---
+
+## 🔥 **Next Steps**
+1. **Implement player movement & shooting mechanics** using a web-based rendering library 
+2. **Connect the chatbox to the AI** (handling OpenAI API requests) in the backend.
+3. **Develop AI-driven item generation and balancing logic**.
+4. **Test and refine gameplay** (e.g., AI feedback, adaptive difficulty scaling).
+
+---
+
+## 🎨 **Art Style**
+- **Pixel art style** for the top-down battlefield, characters, and objects.
+- **Minimalist design** to keep the focus on gameplay and performance.
+
+---
+
+## 🛠️ **Development Philosophy**
+- **Focus on functionality over code quality** in the initial stages.
+- **Keep the game as minimalist as possible** while ensuring it is engaging and fun.
+- **Iterate quickly** based on user feedback and testing.
+
+---
+
+## **Final Notes**
+- **Ensure the game is lightweight and performant** for a smooth user experience.
+- **Deliver a playable prototype** with core mechanics implemented as soon as possible.
