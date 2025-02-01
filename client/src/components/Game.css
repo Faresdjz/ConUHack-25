@@ -1,0 +1,51 @@
+.game-container {
+    text-align: center;
+    flex: 1;
+    padding: 20px;
+    background-color: #1a1a1a;
+    border-radius: 10px;
+    margin: 10px;
+}
+
+.score-board {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.player1-score {
+    color: #4CAF50;
+}
+
+.player2-score {
+    color: #f44336;
+}
+
+#gameCanvas {
+    background-color: #2d2d2d;
+    border: 2px solid #444;
+    max-width: 100%;
+    height: auto;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.player1-controls, .player2-controls {
+    background-color: #333;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.player1-controls {
+    border: 1px solid #4CAF50;
+}
+
+.player2-controls {
+    border: 1px solid #f44336;
+}
