@@ -19,7 +19,7 @@ const ChatBot = ({ onItemGenerated }) => {
         <p className="price">Price: ${item.price || 0}</p>
         {item.image && (
           <img 
-            src={`data:image/png;base64,${item.image}`} 
+            src={item.image}
             alt={item.name || 'Item image'} 
             className="item-image"
           />
@@ -60,13 +60,17 @@ const ChatBot = ({ onItemGenerated }) => {
     setIsLoading(true);
 
     try {
+      // Only send the latest message to prevent API overload
       const response = await fetch('http://localhost:3001/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          messages: [userMessage]
+          messages: [{
+            role: 'user',
+            content: input.trim()
+          }]
         })
       });
 
