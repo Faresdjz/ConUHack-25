@@ -4,7 +4,11 @@ import './Game.css';
 const PLAYER_SIZE = 30;
 const MAX_HEALTH = 100;
 const PLAYER_SPEED = 5;
-const WIN_SCORE = 10;
+const ENEMY_SIZE = 25;
+const ENEMY_SPEED = 2;
+const MONEY_SIZE = 15;
+const SPAWN_INTERVAL = 2000;
+const MONEY_SPAWN_INTERVAL = 3000;
 
 const GUNS = [
     {
@@ -13,7 +17,8 @@ const GUNS = [
         bulletSpeed: 7,
         damage: 10,
         cooldown: 500,
-        color: '#FFD700'
+        color: '#FFD700',
+        cost: 0
     },
     {
         name: 'Shotgun',
@@ -22,7 +27,8 @@ const GUNS = [
         damage: 15,
         cooldown: 800,
         color: '#FF4500',
-        spread: 3
+        spread: 3,
+        cost: 500
     },
     {
         name: 'Machine Gun',
@@ -30,7 +36,8 @@ const GUNS = [
         bulletSpeed: 10,
         damage: 5,
         cooldown: 150,
-        color: '#00FF00'
+        color: '#00FF00',
+        cost: 750
     },
     {
         name: 'Sniper',
@@ -38,23 +45,74 @@ const GUNS = [
         bulletSpeed: 15,
         damage: 40,
         cooldown: 1000,
-        color: '#1E90FF'
+        color: '#1E90FF',
+        cost: 1000
     }
 ];
 
+class Enemy {
+    constructor(x, y, ctx, canvas) {
+        this.x = x;
+        this.y = y;
+        this.health = 50;
+        this.ctx = ctx;
+        this.canvas = canvas;
+        this.size = ENEMY_SIZE;
+    }
+
+    draw() {
+        this.ctx.fillStyle = '#ff4444';
+        this.ctx.beginPath();
+        this.ctx.arc(this.x, this.y, this.size/2, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // Health bar
+        this.ctx.fillStyle = 'white';
+        this.ctx.fillRect(this.x - 20, this.y - 30, 40, 4);
+        this.ctx.fillStyle = 'red';
+        this.ctx.fillRect(this.x - 20, this.y - 30, (this.health / 50) * 40, 4);
+    }
+
+    moveTowards(targetX, targetY) {
+        const angle = Math.atan2(targetY - this.y, targetX - this.x);
+        this.x += Math.cos(angle) * ENEMY_SPEED;
+        this.y += Math.sin(angle) * ENEMY_SPEED;
+    }
+}
+
+class MoneyDrop {
+    constructor(x, y, amount, ctx) {
+        this.x = x;
+        this.y = y;
+        this.amount = amount;
+        this.ctx = ctx;
+    }
+
+    draw() {
+        this.ctx.fillStyle = '#FFD700';
+        this.ctx.beginPath();
+        this.ctx.arc(this.x, this.y, MONEY_SIZE/2, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.fillStyle = 'black';
+        this.ctx.font = '12px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('$' + this.amount, this.x, this.y + 4);
+    }
+}
+
 class Player {
-    constructor(x, y, color, controls, playerImage, ctx, canvas) {
+    constructor(x, y, color, controls, ctx, canvas) {
         this.x = x;
         this.y = y;
         this.color = color;
         this.controls = controls;
-        this.image = playerImage;
         this.health = MAX_HEALTH;
-        this.score = 0;
+        this.money = 100;
         this.bullets = [];
         this.lastShot = 0;
         this.ctx = ctx;
         this.canvas = canvas;
+        this.direction = 'down';
     }
 
     getCurrentGun() {
@@ -62,13 +120,30 @@ class Player {
     }
 
     draw() {
-        this.ctx.drawImage(this.image, this.x - PLAYER_SIZE/2, this.y - PLAYER_SIZE/2, PLAYER_SIZE, PLAYER_SIZE);
-        
-        this.ctx.fillStyle = 'white';
-        this.ctx.fillRect(this.x - 25, this.y - 40, 50, 5);
-        this.ctx.fillStyle = this.health > 30 ? 'green' : 'red';
-        this.ctx.fillRect(this.x - 25, this.y - 40, (this.health / MAX_HEALTH) * 50, 5);
+        // Draw player body
+        this.ctx.fillStyle = this.color;
+        this.ctx.beginPath();
+        this.ctx.arc(this.x, this.y, PLAYER_SIZE/2, 0, Math.PI * 2);
+        this.ctx.fill();
 
+        // Draw direction indicator
+        this.ctx.fillStyle = '#fff';
+        let indicatorX = this.x;
+        let indicatorY = this.y;
+        const offset = PLAYER_SIZE/2 - 5;
+        
+        switch(this.direction) {
+            case 'right': indicatorX += offset; break;
+            case 'left': indicatorX -= offset; break;
+            case 'up': indicatorY -= offset; break;
+            case 'down': indicatorY += offset; break;
+        }
+        
+        this.ctx.beginPath();
+        this.ctx.arc(indicatorX, indicatorY, 5, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // Draw bullets
         this.bullets.forEach(bullet => {
             this.ctx.fillStyle = this.getCurrentGun().color;
             this.ctx.beginPath();
@@ -76,39 +151,60 @@ class Player {
             this.ctx.fill();
         });
 
+        // Draw current gun name
         this.ctx.fillStyle = this.color;
         this.ctx.font = '12px Arial';
-        this.ctx.fillText(this.getCurrentGun().name, this.x - 20, this.y + 40);
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(this.getCurrentGun().name, this.x, this.y + 40);
     }
 
     move() {
-        if (this.controls.up && this.y > PLAYER_SIZE/2) this.y -= PLAYER_SPEED;
-        if (this.controls.down && this.y < this.canvas.height - PLAYER_SIZE/2) this.y += PLAYER_SPEED;
-        if (this.controls.left && this.x > PLAYER_SIZE/2) this.x -= PLAYER_SPEED;
-        if (this.controls.right && this.x < this.canvas.width - PLAYER_SIZE/2) this.x += PLAYER_SPEED;
+        if (this.controls.up && this.y > PLAYER_SIZE/2) {
+            this.y -= PLAYER_SPEED;
+            this.direction = 'up';
+        }
+        if (this.controls.down && this.y < this.canvas.height - PLAYER_SIZE/2) {
+            this.y += PLAYER_SPEED;
+            this.direction = 'down';
+        }
+        if (this.controls.left && this.x > PLAYER_SIZE/2) {
+            this.x -= PLAYER_SPEED;
+            this.direction = 'left';
+        }
+        if (this.controls.right && this.x < this.canvas.width - PLAYER_SIZE/2) {
+            this.x += PLAYER_SPEED;
+            this.direction = 'right';
+        }
     }
 
     shoot() {
         const currentTime = Date.now();
         const gun = this.getCurrentGun();
         if (this.controls.shoot && currentTime - this.lastShot > gun.cooldown) {
-            const direction = this === window.player1 ? 1 : -1;
+            let dx = 0, dy = 0;
+            switch(this.direction) {
+                case 'right': dx = 1; dy = 0; break;
+                case 'left': dx = -1; dy = 0; break;
+                case 'up': dx = 0; dy = -1; break;
+                case 'down': dx = 0; dy = 1; break;
+            }
             
             if (gun.name === 'Shotgun') {
                 for (let i = -1; i <= 1; i++) {
+                    const spread = i * 0.2;
                     this.bullets.push({
-                        x: this.x + (direction * PLAYER_SIZE),
+                        x: this.x,
                         y: this.y,
-                        direction: direction,
-                        spread: i * 0.2
+                        dx: dx + (dy * spread),
+                        dy: dy + (dx * spread)
                     });
                 }
             } else {
                 this.bullets.push({
-                    x: this.x + (direction * PLAYER_SIZE),
+                    x: this.x,
                     y: this.y,
-                    direction: direction,
-                    spread: 0
+                    dx: dx,
+                    dy: dy
                 });
             }
             
@@ -116,34 +212,28 @@ class Player {
         }
     }
 
-    updateBullets() {
+    updateBullets(enemies) {
         for (let i = this.bullets.length - 1; i >= 0; i--) {
             const bullet = this.bullets[i];
-            bullet.x += bullet.direction * this.getCurrentGun().bulletSpeed;
-            bullet.y += bullet.spread * this.getCurrentGun().bulletSpeed;
+            bullet.x += bullet.dx * this.getCurrentGun().bulletSpeed;
+            bullet.y += bullet.dy * this.getCurrentGun().bulletSpeed;
             
-            if (bullet.x < 0 || bullet.x > this.canvas.width) {
+            if (bullet.x < 0 || bullet.x > this.canvas.width || 
+                bullet.y < 0 || bullet.y > this.canvas.height) {
                 this.bullets.splice(i, 1);
                 continue;
             }
 
-            const opponent = this === window.player1 ? window.player2 : window.player1;
-            if (Math.abs(bullet.x - opponent.x) < PLAYER_SIZE/2 &&
-                Math.abs(bullet.y - opponent.y) < PLAYER_SIZE/2) {
-                opponent.health -= this.getCurrentGun().damage;
-                this.bullets.splice(i, 1);
+            for (let j = enemies.length - 1; j >= 0; j--) {
+                const enemy = enemies[j];
+                const dx = bullet.x - enemy.x;
+                const dy = bullet.y - enemy.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
 
-                if (opponent.health <= 0) {
-                    this.score++;
-                    document.getElementById(this === window.player1 ? 'p1-score' : 'p2-score').textContent = this.score;
-                    
-                    if (this.score >= WIN_SCORE) {
-                        alert(`${this === window.player1 ? 'Player 1' : 'Player 2'} wins the game!`);
-                        window.resetGame();
-                    } else {
-                        window.currentGun = (window.currentGun + 1) % GUNS.length;
-                        window.resetRound();
-                    }
+                if (distance < (enemy.size/2 + this.getCurrentGun().bulletSize)) {
+                    enemy.health -= this.getCurrentGun().damage;
+                    this.bullets.splice(i, 1);
+                    break;
                 }
             }
         }
@@ -152,8 +242,6 @@ class Player {
 
 function Game() {
     const canvasRef = useRef(null);
-    const player1ImageRef = useRef(null);
-    const player2ImageRef = useRef(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -162,120 +250,140 @@ function Game() {
         canvas.width = 800;
         canvas.height = 600;
 
-        const player1Image = new Image();
-        const player2Image = new Image();
-        player1Image.src = '/player1.svg';
-        player2Image.src = '/player2.svg';
-
-        player1ImageRef.current = player1Image;
-        player2ImageRef.current = player2Image;
+        let enemies = [];
+        let moneyDrops = [];
 
         const setupGame = () => {
             window.currentGun = 0;
 
-            window.player1 = new Player(200, canvas.height/2, '#4CAF50', {
+            window.player = new Player(canvas.width/2, canvas.height/2, '#4CAF50', {
                 up: false,
                 down: false,
                 left: false,
                 right: false,
                 shoot: false
-            }, player1Image, ctx, canvas);
+            }, ctx, canvas);
 
-            window.player2 = new Player(600, canvas.height/2, '#f44336', {
-                up: false,
-                down: false,
-                left: false,
-                right: false,
-                shoot: false
-            }, player2Image, ctx, canvas);
+            setInterval(() => {
+                const side = Math.floor(Math.random() * 4);
+                let x, y;
+                
+                switch(side) {
+                    case 0: // top
+                        x = Math.random() * canvas.width;
+                        y = -ENEMY_SIZE;
+                        break;
+                    case 1: // right
+                        x = canvas.width + ENEMY_SIZE;
+                        y = Math.random() * canvas.height;
+                        break;
+                    case 2: // bottom
+                        x = Math.random() * canvas.width;
+                        y = canvas.height + ENEMY_SIZE;
+                        break;
+                    case 3: // left
+                        x = -ENEMY_SIZE;
+                        y = Math.random() * canvas.height;
+                        break;
+                }
+                
+                enemies.push(new Enemy(x, y, ctx, canvas));
+            }, SPAWN_INTERVAL);
 
-            window.resetGame = () => {
-                window.player1.score = 0;
-                window.player2.score = 0;
-                document.getElementById('p1-score').textContent = '0';
-                document.getElementById('p2-score').textContent = '0';
+            setInterval(() => {
+                const x = Math.random() * (canvas.width - 100) + 50;
+                const y = Math.random() * (canvas.height - 100) + 50;
+                moneyDrops.push(new MoneyDrop(x, y, Math.floor(Math.random() * 50) + 10, ctx));
+            }, MONEY_SPAWN_INTERVAL);
+        };
+
+        const gameLoop = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            window.player.move();
+            window.player.shoot();
+            window.player.updateBullets(enemies);
+            window.player.draw();
+
+            // Update and draw enemies
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                enemy.moveTowards(window.player.x, window.player.y);
+                enemy.draw();
+
+                // Check collision with player
+                const dx = enemy.x - window.player.x;
+                const dy = enemy.y - window.player.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < (PLAYER_SIZE/2 + enemy.size/2)) {
+                    window.player.health -= 1;
+                }
+
+                if (enemy.health <= 0) {
+                    const moneyAmount = Math.floor(Math.random() * 30) + 20;
+                    moneyDrops.push(new MoneyDrop(enemy.x, enemy.y, moneyAmount, ctx));
+                    enemies.splice(i, 1);
+                }
+            }
+
+            // Update and draw money drops
+            for (let i = moneyDrops.length - 1; i >= 0; i--) {
+                const money = moneyDrops[i];
+                money.draw();
+
+                const dx = money.x - window.player.x;
+                const dy = money.y - window.player.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < (PLAYER_SIZE/2 + MONEY_SIZE/2)) {
+                    window.player.money += money.amount;
+                    moneyDrops.splice(i, 1);
+                    document.getElementById('money-count').textContent = window.player.money;
+                }
+            }
+
+            // Update UI
+            document.getElementById('health-bar').style.width = `${window.player.health}%`;
+            document.getElementById('money-count').textContent = window.player.money;
+
+            if (window.player.health <= 0) {
+                alert('Game Over! Your score: $' + window.player.money);
+                window.player.health = MAX_HEALTH;
+                window.player.money = 100;
+                enemies = [];
+                moneyDrops = [];
                 window.currentGun = 0;
-                window.resetRound();
-            };
+            }
 
-            window.resetRound = () => {
-                window.player1.x = 200;
-                window.player1.y = canvas.height/2;
-                window.player1.health = MAX_HEALTH;
-                window.player1.bullets = [];
-
-                window.player2.x = 600;
-                window.player2.y = canvas.height/2;
-                window.player2.health = MAX_HEALTH;
-                window.player2.bullets = [];
-            };
-
-            const gameLoop = () => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                window.player1.move();
-                window.player2.move();
-                window.player1.shoot();
-                window.player2.shoot();
-                window.player1.updateBullets();
-                window.player2.updateBullets();
-
-                window.player1.draw();
-                window.player2.draw();
-
-                requestAnimationFrame(gameLoop);
-            };
-
-            gameLoop();
+            requestAnimationFrame(gameLoop);
         };
 
         const handleKeyDown = (e) => {
-            switch(e.key.toLowerCase()) {
-                case 'w': window.player1.controls.up = true; break;
-                case 's': window.player1.controls.down = true; break;
-                case 'a': window.player1.controls.left = true; break;
-                case 'd': window.player1.controls.right = true; break;
-                case ' ': window.player1.controls.shoot = true; break;
-                
-                case 'arrowup': window.player2.controls.up = true; break;
-                case 'arrowdown': window.player2.controls.down = true; break;
-                case 'arrowleft': window.player2.controls.left = true; break;
-                case 'arrowright': window.player2.controls.right = true; break;
-                case 'enter': window.player2.controls.shoot = true; break;
+            switch(e.key) {
+                case 'ArrowUp': window.player.controls.up = true; break;
+                case 'ArrowDown': window.player.controls.down = true; break;
+                case 'ArrowLeft': window.player.controls.left = true; break;
+                case 'ArrowRight': window.player.controls.right = true; break;
+                case 'Enter': window.player.controls.shoot = true; break;
             }
         };
 
         const handleKeyUp = (e) => {
-            switch(e.key.toLowerCase()) {
-                case 'w': window.player1.controls.up = false; break;
-                case 's': window.player1.controls.down = false; break;
-                case 'a': window.player1.controls.left = false; break;
-                case 'd': window.player1.controls.right = false; break;
-                case ' ': window.player1.controls.shoot = false; break;
-                
-                case 'arrowup': window.player2.controls.up = false; break;
-                case 'arrowdown': window.player2.controls.down = false; break;
-                case 'arrowleft': window.player2.controls.left = false; break;
-                case 'arrowright': window.player2.controls.right = false; break;
-                case 'enter': window.player2.controls.shoot = false; break;
+            switch(e.key) {
+                case 'ArrowUp': window.player.controls.up = false; break;
+                case 'ArrowDown': window.player.controls.down = false; break;
+                case 'ArrowLeft': window.player.controls.left = false; break;
+                case 'ArrowRight': window.player.controls.right = false; break;
+                case 'Enter': window.player.controls.shoot = false; break;
             }
         };
 
         document.addEventListener('keydown', handleKeyDown);
         document.addEventListener('keyup', handleKeyUp);
 
-        const imagesLoaded = () => {
-            return player1Image.complete && player2Image.complete;
-        };
-
-        if (imagesLoaded()) {
-            setupGame();
-        } else {
-            Promise.all([
-                new Promise(resolve => player1Image.onload = resolve),
-                new Promise(resolve => player2Image.onload = resolve)
-            ]).then(setupGame);
-        }
+        setupGame();
+        gameLoop();
 
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
@@ -285,21 +393,23 @@ function Game() {
 
     return (
         <div className="game-container">
-            <div className="score-board">
-                <div className="player1-score">Player 1: <span id="p1-score">0</span></div>
-                <div className="player2-score">Player 2: <span id="p2-score">0</span></div>
+            <div className="game-ui">
+                <div className="health-container">
+                    <div className="health-bar-bg">
+                        <div id="health-bar" className="health-bar"></div>
+                    </div>
+                </div>
+                <div className="money-container">
+                    <span className="money-symbol">$</span>
+                    <span id="money-count">100</span>
+                </div>
             </div>
             <canvas ref={canvasRef} id="gameCanvas"></canvas>
             <div className="controls">
-                <div className="player1-controls">
-                    <p>Player 1 Controls:</p>
-                    <p>WASD to move</p>
-                    <p>SPACE to shoot</p>
-                </div>
-                <div className="player2-controls">
-                    <p>Player 2 Controls:</p>
-                    <p>Arrow Keys to move</p>
-                    <p>ENTER to shoot</p>
+                <div className="player-controls">
+                    <p>Controls:</p>
+                    <p>Arrow keys to move and aim</p>
+                    <p>Enter to shoot</p>
                 </div>
             </div>
         </div>
