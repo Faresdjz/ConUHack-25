@@ -1,7 +1,7 @@
 .game-ui {
     position: relative;
     width: 100%;
-    max-width: 800px;
+    max-width: 1200px;
     z-index: 10;
     display: flex;
     justify-content: center;
@@ -35,8 +35,8 @@
     background-color: rgba(0, 0, 0, 0.8);
     border-radius: 8px;
     color: white;
-    width: 100%;
-    max-width: 800px;
+    width: 90%;
+    max-width: 1000px;
     margin: 20px auto 0;
 }
 

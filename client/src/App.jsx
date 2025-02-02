@@ -7,7 +7,7 @@ import './components/Game.css'
 
 function App() {
   const [gameState, setGameState] = useState({
-    money: 100000,
+    money: 1000,
     inventory: []
   });
 

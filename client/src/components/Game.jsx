@@ -12,8 +12,8 @@ function Game({ inventory }) {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         
-        canvas.width = 800;
-        canvas.height = 600;
+        canvas.width = 1200;
+        canvas.height = 800;
 
         const { enemies, moneyDrops } = setupGame(canvas, ctx);
         gameStateRef.current = { enemies, moneyDrops };
