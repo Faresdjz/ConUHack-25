@@ -25,7 +25,6 @@ Your role is to generate game items based on user requests. For EVERY request, y
     "damage": number,
     "fireRate": number,
     "speed": number,
-    "durability": number
   },
   "description": "string",
   "imageDescription": "string"

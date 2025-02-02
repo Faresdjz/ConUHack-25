@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { GUNS } from './game/constants';
-import { GameUI, Controls } from './game/GameUI';
+import { GameUI, Controls, InventoryUI } from './game/GameUI';
 import { setupGame, updateGame, handleKeyDown, handleKeyUp } from './game/gameLogic';
 import './Game.css';
 
@@ -90,6 +90,7 @@ function Game({ onItemGenerated, inventory }) {
             <GameUI />
             <canvas ref={canvasRef} id="gameCanvas"></canvas>
             <Controls />
+            <InventoryUI inventory={inventory} />
         </div>
     );
 }

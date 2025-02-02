@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import './GameUI.css';
 
@@ -33,6 +32,37 @@ export function Controls() {
     );
 }
 
+function Inventory({ items }) {
+    return (
+        <div className="inventory">
+            <h3>Inventory</h3>
+            <div className="inventory-grid">
+                {items.map((item, index) => (
+                    <div key={index} className="inventory-item">
+                        <div className="item-name">{item.name}</div>
+                        <div className="item-stats">
+                            <div>Damage: {item.stats.damage}</div>
+                            <div>Fire Rate: {item.stats.firerate}/s</div>
+                        </div>
+                        <div className="item-price">${item.price}</div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+Inventory.propTypes = {
+    items: PropTypes.arrayOf(PropTypes.shape({
+        name: PropTypes.string,
+        price: PropTypes.number,
+        stats: PropTypes.shape({
+            firerate: PropTypes.number,
+            damage: PropTypes.number
+        })
+    })).isRequired
+};
+
 export function GameUI() {
     return (
         <div className="game-ui">
@@ -42,8 +72,15 @@ export function GameUI() {
     );
 }
 
-GameUI.propTypes = {
-    onItemGenerated: PropTypes.func,
+export function InventoryUI({ inventory = [] }) {
+    return (
+        <div className="inventory-container">
+            <Inventory items={inventory} />
+        </div>
+    );
+}
+
+InventoryUI.propTypes = {
     inventory: PropTypes.arrayOf(PropTypes.shape({
         name: PropTypes.string,
         price: PropTypes.number,
