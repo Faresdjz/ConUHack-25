@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 import './GameUI.css';
 
 export function HealthBar() {
@@ -37,6 +38,13 @@ export function Controls() {
 }
 
 function Inventory({ items }) {
+    const [activeItemIndex, setActiveItemIndex] = useState(null);
+
+    const handleItemClick = (index, stats) => {
+        setActiveItemIndex(index);
+        window.player.updateBulletStats(stats);
+    };
+
     return (
         <div className="inventory">
             <h3>Inventory</h3>
@@ -44,8 +52,8 @@ function Inventory({ items }) {
                 {items.map((item, index) => (
                     <div 
                         key={index} 
-                        className="inventory-item" 
-                        onClick={() => window.player.updateBulletStats(item.stats)}
+                        className={`inventory-item ${activeItemIndex === index ? 'active' : ''}`}
+                        onClick={() => handleItemClick(index, item.stats)}
                         style={{ cursor: 'pointer' }}
                     >
                         <div className="item-name">{item.name}</div>

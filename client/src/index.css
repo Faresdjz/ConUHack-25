@@ -1,11 +1,11 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Courier New', monospace;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: dark;
+  color: #c8c8c8;
+  background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -15,11 +15,14 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #7fff00;
   text-decoration: inherit;
+  transition: all 0.2s ease;
 }
+
 a:hover {
-  color: #535bf2;
+  color: #9fff3f;
+  text-shadow: 0 0 10px rgba(127, 255, 0, 0.3);
 }
 
 html, body {
@@ -35,42 +38,52 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #242424;
+  background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  color: #7fff00;
+  text-shadow: 0 0 15px rgba(127, 255, 0, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
+  border-radius: 6px;
+  border: 1px solid #3a3a3a;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  font-family: 'Courier New', monospace;
+  background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+  color: #c8c8c8;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+button:hover {
+  border-color: #8b0000;
+  box-shadow: 0 0 10px rgba(139, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+button:focus,
+button:focus-visible {
+  outline: none;
+  border-color: #8b0000;
+  box-shadow: 0 0 0 2px rgba(139, 0, 0, 0.2);
+}
+
+::selection {
+  background: rgba(139, 0, 0, 0.7);
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background: rgba(139, 0, 0, 0.7);
+  color: #ffffff;
 }

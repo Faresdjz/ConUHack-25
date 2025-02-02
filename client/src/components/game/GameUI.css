@@ -11,40 +11,56 @@
 
 .health-container {
     width: 300px;
+    border: 2px solid #8b0000;
+    background: rgba(20, 20, 20, 0.9);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(139, 0, 0, 0.3);
 }
 
 .controls {
     position: absolute;
     bottom: 20px;
     right: 20px;
-    background-color: rgba(0, 0, 0, 0.7);
+    background: linear-gradient(to bottom, #1a1a1a 0%, #0a0a0a 100%);
     padding: 15px;
-    border-radius: 10px;
-    color: white;
+    border-radius: 5px;
+    color: #c8c8c8;
     z-index: 10;
+    border: 1px solid #3a3a3a;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
 .player-controls p {
     margin: 5px 0;
     font-size: 14px;
+    color: #a0a0a0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .inventory {
     margin-top: 20px;
-    padding: 15px;
-    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    background: linear-gradient(to bottom, rgba(20, 20, 20, 0.95), rgba(10, 10, 10, 0.95));
     border-radius: 8px;
-    color: white;
+    color: #c8c8c8;
     width: 90%;
     max-width: 1000px;
     margin: 20px auto 0;
+    border: 1px solid #3a3a3a;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
 }
 
 .inventory h3 {
     margin: 0 0 15px 0;
     text-align: center;
     font-size: 1.2em;
-    color: #fff;
+    color: #d4d4d4;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    border-bottom: 2px solid #8b0000;
+    padding-bottom: 10px;
 }
 
 .inventory-grid {
@@ -55,30 +71,75 @@
 }
 
 .inventory-item {
-    background-color: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+    border: 1px solid #3a3a3a;
     border-radius: 6px;
-    padding: 12px;
-    transition: transform 0.2s;
+    padding: 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    position: relative;
 }
 
 .inventory-item:hover {
     transform: translateY(-2px);
-    background-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 8px rgba(139, 0, 0, 0.2);
+    border-color: #8b0000;
+}
+
+.inventory-item.active {
+    background: linear-gradient(135deg, #2a1a1a, #1a0a0a);
+    border: 2px solid #ff3000;
+    box-shadow: 0 0 15px rgba(255, 48, 0, 0.3);
+    transform: scale(1.02);
+}
+
+.inventory-item.active::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 8px;
+    background: linear-gradient(45deg, #ff3000, #ff6b00);
+    z-index: -1;
+    animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        opacity: 0.5;
+    }
+    to {
+        opacity: 0.8;
+    }
+}
+
+.inventory-item.active .item-name {
+    color: #ff6b00;
+    text-shadow: 0 0 8px rgba(255, 107, 0, 0.5);
 }
 
 .item-name {
     font-weight: bold;
     margin-bottom: 8px;
-    color: #4CAF50;
+    color: #7fff00;
+    text-shadow: 0 0 5px rgba(127, 255, 0, 0.3);
+    font-family: 'Courier New', monospace;
 }
 
 .item-stats {
     font-size: 0.9em;
-    color: #ccc;
+    color: #a0a0a0;
     margin-bottom: 8px;
+    font-family: 'Courier New', monospace;
+    border-left: 2px solid #8b0000;
+    padding-left: 8px;
 }
 
 .item-price {
-    color: #FFD700;
+    color: #daa520;
     font-weight: bold;
+    text-shadow: 0 0 5px rgba(218, 165, 32, 0.3);
+    font-family: 'Courier New', monospace;
 }

@@ -3,12 +3,13 @@
   flex-direction: column;
   height: 100%;
   max-height: calc(100vh - 3rem);
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 10px;
+  background: linear-gradient(to bottom, rgba(20, 20, 20, 0.95), rgba(10, 10, 10, 0.95));
+  border-radius: 8px;
   padding: 1.5rem;
   gap: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
   overflow: hidden;
+  border: 1px solid #3a3a3a;
 }
 
 .messages {
@@ -21,10 +22,10 @@
   padding-right: 1rem;
   min-height: 0;
   max-height: calc(100vh - 15rem);
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(10, 10, 10, 0.8);
   border-radius: 8px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
+  scrollbar-color: #8b0000 rgba(20, 20, 20, 0.8);
 }
 
 .messages::-webkit-scrollbar {
@@ -32,18 +33,18 @@
 }
 
 .messages::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(20, 20, 20, 0.8);
   border-radius: 4px;
 }
 
 .messages::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
+  background: #8b0000;
   border-radius: 4px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(20, 20, 20, 0.8);
 }
 
 .messages::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.4);
+  background: #a00000;
 }
 
 .message {
@@ -51,48 +52,54 @@
   border-radius: 8px;
   max-width: 85%;
   word-break: break-word;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   animation: fadeIn 0.3s ease-out;
 }
 
 .message.user {
   align-self: flex-end;
-  background: linear-gradient(135deg, #2c5282, #1a365d);
-  color: white;
+  background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+  color: #c8c8c8;
   margin-left: 1rem;
+  border: 1px solid #3a3a3a;
 }
 
 .message.assistant {
   align-self: flex-start;
-  background: linear-gradient(135deg, #2d3748, #1a202c);
-  color: white;
+  background: linear-gradient(135deg, #0a0a0a, #000000);
+  color: #7fff00;
   margin-right: 1rem;
+  border: 1px solid #3a3a3a;
 }
 
 .game-item {
-  background: rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
   border-radius: 8px;
   padding: 1.2rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  border: 1px solid #8b0000;
   animation: fadeIn 0.3s ease-out;
 }
 
 .game-item h3 {
-  color: #48bb78;
+  color: #7fff00;
   margin: 0;
   font-size: 1.2rem;
-  text-shadow: 0 0 10px rgba(72, 187, 120, 0.3);
+  text-shadow: 0 0 10px rgba(127, 255, 0, 0.3);
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .game-item .price {
-  color: #ecc94b;
+  color: #daa520;
   font-weight: bold;
   margin: 0;
-  text-shadow: 0 0 10px rgba(236, 201, 75, 0.3);
+  text-shadow: 0 0 10px rgba(218, 165, 32, 0.3);
+  font-family: 'Courier New', monospace;
 }
 
 .item-image {
@@ -100,20 +107,24 @@
   height: auto;
   border-radius: 8px;
   align-self: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  border: 2px solid #3a3a3a;
 }
 
 .stats {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(10, 10, 10, 0.8);
   border-radius: 8px;
   padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid #3a3a3a;
 }
 
 .stats h4 {
   margin: 0 0 0.8rem 0;
-  color: #90cdf4;
-  text-shadow: 0 0 10px rgba(144, 205, 244, 0.3);
+  color: #7fff00;
+  text-shadow: 0 0 10px rgba(127, 255, 0, 0.3);
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .stats ul {
@@ -126,26 +137,30 @@
 }
 
 .stats li {
-  color: #e2e8f0;
+  color: #c8c8c8;
   font-size: 0.95rem;
   padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(20, 20, 20, 0.8);
   border-radius: 4px;
+  border: 1px solid #3a3a3a;
+  font-family: 'Courier New', monospace;
 }
 
 .description {
-  color: #a0aec0;
+  color: #a0a0a0;
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.5;
   padding: 0.8rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(20, 20, 20, 0.8);
   border-radius: 6px;
+  border: 1px solid #3a3a3a;
+  font-family: 'Courier New', monospace;
 }
 
 .purchase-button {
-  background: linear-gradient(135deg, #48bb78, #38a169);
-  color: white;
+  background: linear-gradient(135deg, #8b0000, #600000);
+  color: #ffffff;
   border: none;
   border-radius: 6px;
   padding: 0.8rem 1.2rem;
@@ -153,18 +168,19 @@
   cursor: pointer;
   transition: all 0.2s ease;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 1px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-family: 'Courier New', monospace;
 }
 
 .purchase-button:hover {
-  background: linear-gradient(135deg, #38a169, #2f855a);
+  background: linear-gradient(135deg, #a00000, #700000);
   transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 6px rgba(139, 0, 0, 0.3);
 }
 
 .purchase-button:disabled {
-  background: #4a5568;
+  background: #2a2a2a;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -173,36 +189,38 @@
 .input-form {
   display: flex;
   gap: 0.8rem;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(10, 10, 10, 0.8);
   padding: 1rem;
   border-radius: 8px;
+  border: 1px solid #3a3a3a;
 }
 
 .input-form input {
   flex: 1;
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(20, 20, 20, 0.8);
+  border: 1px solid #3a3a3a;
   border-radius: 6px;
   padding: 0.8rem 1.2rem;
-  color: white;
+  color: #c8c8c8;
   font-size: 1rem;
   transition: all 0.2s ease;
+  font-family: 'Courier New', monospace;
 }
 
 .input-form input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: #606060;
 }
 
 .input-form input:focus {
-  border-color: #4299e1;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+  border-color: #8b0000;
+  background: rgba(20, 20, 20, 0.9);
+  box-shadow: 0 0 0 2px rgba(139, 0, 0, 0.2);
   outline: none;
 }
 
 .input-form button {
-  background: linear-gradient(135deg, #4299e1, #3182ce);
-  color: white;
+  background: linear-gradient(135deg, #8b0000, #600000);
+  color: #ffffff;
   border: none;
   border-radius: 6px;
   padding: 0.8rem 1.5rem;
@@ -210,18 +228,19 @@
   cursor: pointer;
   transition: all 0.2s ease;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 1px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-family: 'Courier New', monospace;
 }
 
 .input-form button:hover {
-  background: linear-gradient(135deg, #3182ce, #2b6cb0);
+  background: linear-gradient(135deg, #a00000, #700000);
   transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 6px rgba(139, 0, 0, 0.3);
 }
 
 .input-form button:disabled {
-  background: #4a5568;
+  background: #2a2a2a;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -229,9 +248,10 @@
 
 .loading {
   align-self: center;
-  color: #a0aec0;
+  color: #7fff00;
   font-style: italic;
   animation: pulse 1.5s infinite;
+  font-family: 'Courier New', monospace;
 }
 
 @keyframes pulse {
