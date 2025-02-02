@@ -152,6 +152,15 @@ export class Player {
         }
     }
 
+    updateBulletStats(stats) {
+        // Update each property if provided in stats
+        if (stats.size !== undefined) this.bulletProps.size = stats.size;
+        if (stats.speed !== undefined) this.bulletProps.speed = stats.speed;
+        if (stats.damage !== undefined) this.bulletProps.damage = stats.damage;
+        if (stats.cooldown !== undefined) this.bulletProps.cooldown = stats.cooldown;
+        if (stats.color !== undefined) this.bulletProps.color = stats.color;
+    }
+
     updateBullets(enemies) {
         for (let i = this.bullets.length - 1; i >= 0; i--) {
             const bullet = this.bullets[i];
