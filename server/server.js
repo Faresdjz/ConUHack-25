@@ -22,9 +22,11 @@ Your role is to generate game items based on user requests. For EVERY request, y
   "name": "string",
   "price": number,
   "stats": {
-    "damage": number,
-    "fireRate": number,
+    "size": number,
     "speed": number,
+    "damage": number,
+    "cooldown": number,
+    "color": "string"
   },
   "description": "string",
   "imageDescription": "string"

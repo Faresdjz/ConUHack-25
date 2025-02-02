@@ -18,6 +18,7 @@ function App() {
         money: prev.money - item.price,
         inventory: [...prev.inventory, item]
       }));
+      console.log("Purchased item:", item);
     } else {
       alert("Not enough money to purchase this item!");
     }
