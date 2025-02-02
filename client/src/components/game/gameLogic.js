@@ -2,7 +2,6 @@ import { Enemy, MoneyDrop, Player } from './entities';
 import { SPAWN_INTERVAL, MONEY_SPAWN_INTERVAL, MAX_HEALTH, COLLISION_DAMAGE, INVINCIBILITY_FRAMES, HEALTH_REGEN_DELAY, HEALTH_REGEN_RATE } from './constants';
 
 export function setupGame(canvas, ctx) {
-    window.currentGun = 0;
     const enemies = [];
     const moneyDrops = [];
 
@@ -145,7 +144,6 @@ export function updateGame(ctx, canvas, enemies, moneyDrops) {
         window.player.money = 100;
         enemies.length = 0;
         moneyDrops.length = 0;
-        window.currentGun = 0;
     }
 }
 

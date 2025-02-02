@@ -1,4 +1,4 @@
-import { ENEMY_SIZE, ENEMY_HITBOX_SIZE, ENEMY_SPEED, MONEY_SIZE, PLAYER_SIZE, MAX_HEALTH, PLAYER_SPEED, GUNS } from './constants';
+import { ENEMY_SIZE, ENEMY_HITBOX_SIZE, ENEMY_SPEED, MONEY_SIZE, PLAYER_SIZE, MAX_HEALTH, PLAYER_SPEED } from './constants';
 
 export class Enemy {
     constructor(x, y, ctx, canvas) {
@@ -67,10 +67,15 @@ export class Player {
         this.lastDamageTime = 0;
         this.lastHitTime = 0;
         this.isFlashing = false;
-    }
-
-    getCurrentGun() {
-        return GUNS[window.currentGun];
+        
+        // Default bullet properties
+        this.bulletProps = {
+            size: 5,
+            speed: 7,
+            damage: 10,
+            cooldown: 500,
+            color: '#FFD700'
+        };
     }
 
     draw() {
@@ -99,17 +104,11 @@ export class Player {
 
         // Draw bullets
         this.bullets.forEach(bullet => {
-            this.ctx.fillStyle = this.getCurrentGun().color;
+            this.ctx.fillStyle = this.bulletProps.color;
             this.ctx.beginPath();
-            this.ctx.arc(bullet.x, bullet.y, this.getCurrentGun().bulletSize, 0, Math.PI * 2);
+            this.ctx.arc(bullet.x, bullet.y, this.bulletProps.size, 0, Math.PI * 2);
             this.ctx.fill();
         });
-
-        // Draw current gun name
-        this.ctx.fillStyle = this.color;
-        this.ctx.font = '12px Arial';
-        this.ctx.textAlign = 'center';
-        this.ctx.fillText(this.getCurrentGun().name, this.x, this.y + 40);
     }
 
     move() {
@@ -133,8 +132,7 @@ export class Player {
 
     shoot() {
         const currentTime = Date.now();
-        const gun = this.getCurrentGun();
-        if (this.controls.shoot && currentTime - this.lastShot > gun.cooldown) {
+        if (this.controls.shoot && currentTime - this.lastShot > this.bulletProps.cooldown) {
             let dx = 0, dy = 0;
             switch(this.direction) {
                 case 'right': dx = 1; dy = 0; break;
@@ -143,24 +141,12 @@ export class Player {
                 case 'down': dx = 0; dy = 1; break;
             }
             
-            if (gun.name === 'Shotgun') {
-                for (let i = -1; i <= 1; i++) {
-                    const spread = i * 0.2;
-                    this.bullets.push({
-                        x: this.x,
-                        y: this.y,
-                        dx: dx + (dy * spread),
-                        dy: dy + (dx * spread)
-                    });
-                }
-            } else {
-                this.bullets.push({
-                    x: this.x,
-                    y: this.y,
-                    dx: dx,
-                    dy: dy
-                });
-            }
+            this.bullets.push({
+                x: this.x,
+                y: this.y,
+                dx: dx,
+                dy: dy
+            });
             
             this.lastShot = currentTime;
         }
@@ -169,8 +155,8 @@ export class Player {
     updateBullets(enemies) {
         for (let i = this.bullets.length - 1; i >= 0; i--) {
             const bullet = this.bullets[i];
-            bullet.x += bullet.dx * this.getCurrentGun().bulletSpeed;
-            bullet.y += bullet.dy * this.getCurrentGun().bulletSpeed;
+            bullet.x += bullet.dx * this.bulletProps.speed;
+            bullet.y += bullet.dy * this.bulletProps.speed;
             
             if (bullet.x < 0 || bullet.x > this.canvas.width || 
                 bullet.y < 0 || bullet.y > this.canvas.height) {
@@ -184,8 +170,8 @@ export class Player {
                 const dy = bullet.y - enemy.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
 
-                if (distance < (enemy.hitboxSize/2 + this.getCurrentGun().bulletSize)) {
-                    enemy.health -= this.getCurrentGun().damage;
+                if (distance < (enemy.hitboxSize/2 + this.bulletProps.size)) {
+                    enemy.health -= this.bulletProps.damage;
                     this.bullets.splice(i, 1);
                     break;
                 }
