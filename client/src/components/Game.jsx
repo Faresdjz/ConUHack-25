@@ -4,8 +4,13 @@ import './Game.css';
 const PLAYER_SIZE = 30;
 const MAX_HEALTH = 100;
 const PLAYER_SPEED = 5;
-const ENEMY_SIZE = 25;
+const ENEMY_SIZE = 25; // Visual size
+const ENEMY_HITBOX_SIZE = 15; // Collision detection size
 const ENEMY_SPEED = 2;
+const COLLISION_DAMAGE = 10;
+const INVINCIBILITY_FRAMES = 1000; // ms
+const HEALTH_REGEN_RATE = 0.05; // health per frame
+const HEALTH_REGEN_DELAY = 3000; // ms before health starts regenerating
 const MONEY_SIZE = 15;
 const SPAWN_INTERVAL = 2000;
 const MONEY_SPAWN_INTERVAL = 3000;
@@ -57,7 +62,8 @@ class Enemy {
         this.health = 50;
         this.ctx = ctx;
         this.canvas = canvas;
-        this.size = ENEMY_SIZE;
+        this.size = ENEMY_SIZE; // Visual size
+        this.hitboxSize = ENEMY_HITBOX_SIZE; // Collision size
     }
 
     draw() {
@@ -113,6 +119,9 @@ class Player {
         this.ctx = ctx;
         this.canvas = canvas;
         this.direction = 'down';
+        this.lastDamageTime = 0;
+        this.lastHitTime = 0;
+        this.isFlashing = false;
     }
 
     getCurrentGun() {
@@ -120,8 +129,8 @@ class Player {
     }
 
     draw() {
-        // Draw player body
-        this.ctx.fillStyle = this.color;
+        // Draw player body with damage flash effect
+        this.ctx.fillStyle = this.isFlashing ? '#ff0000' : this.color;
         this.ctx.beginPath();
         this.ctx.arc(this.x, this.y, PLAYER_SIZE/2, 0, Math.PI * 2);
         this.ctx.fill();
@@ -230,7 +239,7 @@ class Player {
                 const dy = bullet.y - enemy.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
 
-                if (distance < (enemy.size/2 + this.getCurrentGun().bulletSize)) {
+                if (distance < (enemy.hitboxSize/2 + this.getCurrentGun().bulletSize)) {
                     enemy.health -= this.getCurrentGun().damage;
                     this.bullets.splice(i, 1);
                     break;
@@ -270,20 +279,20 @@ function Game() {
                 
                 switch(side) {
                     case 0: // top
-                        x = Math.random() * canvas.width;
-                        y = -ENEMY_SIZE;
+                        x = Math.random() * (canvas.width - ENEMY_SIZE) + ENEMY_SIZE/2;
+                        y = 0;
                         break;
                     case 1: // right
-                        x = canvas.width + ENEMY_SIZE;
-                        y = Math.random() * canvas.height;
+                        x = canvas.width;
+                        y = Math.random() * (canvas.height - ENEMY_SIZE) + ENEMY_SIZE/2;
                         break;
                     case 2: // bottom
-                        x = Math.random() * canvas.width;
-                        y = canvas.height + ENEMY_SIZE;
+                        x = Math.random() * (canvas.width - ENEMY_SIZE) + ENEMY_SIZE/2;
+                        y = canvas.height;
                         break;
                     case 3: // left
-                        x = -ENEMY_SIZE;
-                        y = Math.random() * canvas.height;
+                        x = 0;
+                        y = Math.random() * (canvas.height - ENEMY_SIZE) + ENEMY_SIZE/2;
                         break;
                 }
                 
@@ -315,9 +324,40 @@ function Game() {
                 const dx = enemy.x - window.player.x;
                 const dy = enemy.y - window.player.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
+                const combinedRadius = (PLAYER_SIZE/2 + enemy.hitboxSize/2);
 
-                if (distance < (PLAYER_SIZE/2 + enemy.size/2)) {
-                    window.player.health -= 1;
+                const currentTime = Date.now();
+                if (distance < combinedRadius && 
+                    currentTime - window.player.lastDamageTime > INVINCIBILITY_FRAMES) {
+                    window.player.health -= COLLISION_DAMAGE;
+                    window.player.lastDamageTime = currentTime;
+                    window.player.lastHitTime = currentTime;
+                    window.player.isFlashing = true;
+                    setTimeout(() => {
+                        window.player.isFlashing = false;
+                    }, 200);
+
+                    // Simple knockback
+                    const knockbackForce = 20;
+                    const angle = Math.atan2(dy, dx);
+                    const knockbackX = Math.cos(angle) * knockbackForce;
+                    const knockbackY = Math.sin(angle) * knockbackForce;
+
+                    // Apply knockback with boundary check
+                    const newX = window.player.x + knockbackX;
+                    const newY = window.player.y + knockbackY;
+
+                    if (newX >= PLAYER_SIZE/2 && newX <= canvas.width - PLAYER_SIZE/2) {
+                        window.player.x = newX;
+                    }
+                    if (newY >= PLAYER_SIZE/2 && newY <= canvas.height - PLAYER_SIZE/2) {
+                        window.player.y = newY;
+                    }
+                }
+
+                // Health regeneration
+                if (currentTime - window.player.lastHitTime > HEALTH_REGEN_DELAY && window.player.health < MAX_HEALTH) {
+                    window.player.health = Math.min(MAX_HEALTH, window.player.health + HEALTH_REGEN_RATE);
                 }
 
                 if (enemy.health <= 0) {
@@ -401,7 +441,7 @@ function Game() {
                 </div>
                 <div className="money-container">
                     <span className="money-symbol">$</span>
-                    <span id="money-count">100</span>
+                    <span id="money-count"></span>
                 </div>
             </div>
             <canvas ref={canvasRef} id="gameCanvas"></canvas>
