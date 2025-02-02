@@ -7,7 +7,7 @@ import './components/Game.css'
 
 function App() {
   const [gameState, setGameState] = useState({
-    money: 1000,
+    money: 100000,
     inventory: []
   });
 
@@ -27,9 +27,6 @@ function App() {
     <div className="app">
       <header>
         <h1>AI Chat Assistant & Game</h1>
-        <div className="game-stats">
-          <span>Money: ${gameState.money}</span>
-        </div>
       </header>
       <main className="main-content">
         <Game inventory={gameState.inventory} />

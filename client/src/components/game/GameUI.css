@@ -1,0 +1,30 @@
+.game-ui {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+.health-container {
+    width: 300px;
+}
+
+.controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 10px;
+    color: white;
+    z-index: 10;
+}
+
+.player-controls p {
+    margin: 5px 0;
+    font-size: 14px;
+}
