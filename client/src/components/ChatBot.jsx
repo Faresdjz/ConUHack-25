@@ -6,6 +6,7 @@ const ChatBot = ({ onItemGenerated }) => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [purchasedItems, setPurchasedItems] = useState(new Set());
 
   const renderGameItem = (item) => {
     if (!item || typeof item !== 'object') return null;
@@ -41,10 +42,13 @@ const ChatBot = ({ onItemGenerated }) => {
         )}
         <button 
           className="purchase-button"
-          onClick={() => onItemGenerated(item)}
-          disabled={!item.price}
+          onClick={() => {
+            onItemGenerated(item);
+            setPurchasedItems(prev => new Set([...prev, item.name]));
+          }}
+          disabled={!item.price || purchasedItems.has(item.name)}
         >
-          Purchase for ${item.price || 0}
+          {purchasedItems.has(item.name) ? 'Purchased' : `Purchase for $${item.price || 0}`}
         </button>
       </div>
     );
