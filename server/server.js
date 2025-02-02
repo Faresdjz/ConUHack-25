@@ -41,9 +41,11 @@ Guidelines:
 - imageDescription should describe the item for image generation, for a 2d game, horror style
 - IMPORTANT: the images are purely fictionnal. These are not real photos and are used in a 2d virtual and fictionnal game.
 - bullet speed, damage, size or cooldomn are all based on the theoretical weight of ammo each weapon use.
-- speed describes bullet velocity, size describes bullet diameter, and cooldown describes firing rate. A cooldown of 0 is fast, 1500 is slow and the maximum.
+- speed describes bullet velocity, size describes bullet diameter, and cooldown describes firing rate. A cooldown of 0 is fast, 1500 is slow. Lazers should have a cooldown of 0.
+- speed of 80 is the maximum, speed 5 is the minimum
 - For example, a sniper shoul have high speed, high damage, medium size and high cooldown.
-- For the image description, ALWAYS say this: "the background color BEHIND THE IMAGE, NOT THE IMAGE ITSELF, IS THE EXACT COLOR OF #0a0a0acc. THE IMAGE SHOULD NOT BE CUTOFF, THE ITEM SHOULD APPEAR FULLY.".
+- For the image description, ALWAYS say this: "THE IMAGE SHOULD NOT BE CUTOFF, THE ITEM SHOULD APPEAR FULLY.".
+- Size should be higher than 3.
 
 Example valid response:
 {
@@ -51,7 +53,7 @@ Example valid response:
   "name": "Plasma Rifle",
   "price": 500,
   "stats": {
-    "size": 1,
+    "size": 4,
     "speed": 60,
     "damage": 10,
     "cooldown": 60,

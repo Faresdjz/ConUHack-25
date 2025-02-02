@@ -133,8 +133,8 @@
     background-color: #f0f0f0;
     background-image: 
         repeating-conic-gradient(
-            #242323 0% 25%,
-            #8e8e8e 0% 50%
+            #000 0% 25%,
+            #f0f0f0 0% 50%
         );
     background-size: 120px 120px;
     border: 3px solid #8b0000;
@@ -144,7 +144,6 @@
     aspect-ratio: 16/9;
     box-shadow: 0 0 30px rgba(139, 0, 0, 0.3);
     position: relative;
-    opacity: 0.6;
 }
 
 #gameCanvas::before {
