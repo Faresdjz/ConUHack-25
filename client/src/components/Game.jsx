@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './Game.css';
 
 const PLAYER_SIZE = 30;
@@ -9,6 +9,8 @@ const ENEMY_SPEED = 2;
 const MONEY_SIZE = 15;
 const SPAWN_INTERVAL = 2000;
 const MONEY_SPAWN_INTERVAL = 3000;
+const INITIAL_COUNTDOWN = 10;
+const LEVEL_COUNTDOWN = 120;
 
 const GUNS = [
     {
@@ -51,10 +53,10 @@ const GUNS = [
 ];
 
 class Enemy {
-    constructor(x, y, ctx, canvas) {
+    constructor(x, y, ctx, canvas, level) {
         this.x = x;
         this.y = y;
-        this.health = 50;
+        this.health = 50 + (level * 25); // Health scales with level
         this.ctx = ctx;
         this.canvas = canvas;
         this.size = ENEMY_SIZE;
@@ -242,6 +244,11 @@ class Player {
 
 function Game() {
     const canvasRef = useRef(null);
+    const [isPaused, setIsPaused] = useState(false);
+    const [level, setLevel] = useState(0);
+    const [countdown, setCountdown] = useState(INITIAL_COUNTDOWN);
+    const [isLevelCountdown, setIsLevelCountdown] = useState(false);
+    const gameLoopRef = useRef(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -252,6 +259,7 @@ function Game() {
 
         let enemies = [];
         let moneyDrops = [];
+        let maxEnemies = 5; // Initial max enemies
 
         const setupGame = () => {
             window.currentGun = 0;
@@ -264,7 +272,20 @@ function Game() {
                 shoot: false
             }, ctx, canvas);
 
-            setInterval(() => {
+            // Start initial countdown
+            const countdownInterval = setInterval(() => {
+                setCountdown(prev => {
+                    if (prev <= 1) {
+                        clearInterval(countdownInterval);
+                        setLevel(1);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+
+            const spawnEnemy = () => {
+                if (isPaused || enemies.length >= maxEnemies || countdown > 0) return;
                 const side = Math.floor(Math.random() * 4);
                 let x, y;
                 
@@ -287,17 +308,50 @@ function Game() {
                         break;
                 }
                 
-                enemies.push(new Enemy(x, y, ctx, canvas));
-            }, SPAWN_INTERVAL);
+                enemies.push(new Enemy(x, y, ctx, canvas, level));
+            };
 
-            setInterval(() => {
+            const enemySpawnInterval = setInterval(spawnEnemy, SPAWN_INTERVAL);
+
+            const spawnMoney = () => {
+                if (isPaused || countdown > 0) return;
                 const x = Math.random() * (canvas.width - 100) + 50;
                 const y = Math.random() * (canvas.height - 100) + 50;
                 moneyDrops.push(new MoneyDrop(x, y, Math.floor(Math.random() * 50) + 10, ctx));
-            }, MONEY_SPAWN_INTERVAL);
+            };
+
+            const moneySpawnInterval = setInterval(spawnMoney, MONEY_SPAWN_INTERVAL);
+
+            return () => {
+                clearInterval(enemySpawnInterval);
+                clearInterval(moneySpawnInterval);
+                clearInterval(countdownInterval);
+            };
+        };
+
+        const checkLevelComplete = () => {
+            if (enemies.length === 0 && level > 0 && !isLevelCountdown) {
+                setIsLevelCountdown(true);
+                setCountdown(LEVEL_COUNTDOWN);
+                const levelCountdownInterval = setInterval(() => {
+                    setCountdown(prev => {
+                        if (prev <= 1) {
+                            clearInterval(levelCountdownInterval);
+                            setIsLevelCountdown(false);
+                            setLevel(prevLevel => prevLevel + 1);
+                            maxEnemies += 2; // Increase max enemies each level
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+            }
         };
 
         const gameLoop = () => {
+            if (isPaused) {
+                return;
+            }
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             window.player.move();
@@ -348,18 +402,27 @@ function Game() {
             document.getElementById('money-count').textContent = window.player.money;
 
             if (window.player.health <= 0) {
-                alert('Game Over! Your score: $' + window.player.money);
+                alert('Game Over! Your score: $' + window.player.money + '\nLevel reached: ' + level);
                 window.player.health = MAX_HEALTH;
                 window.player.money = 100;
                 enemies = [];
                 moneyDrops = [];
                 window.currentGun = 0;
+                setLevel(0);
+                setCountdown(INITIAL_COUNTDOWN);
+                maxEnemies = 5;
             }
 
-            requestAnimationFrame(gameLoop);
+            checkLevelComplete();
+
+            gameLoopRef.current = requestAnimationFrame(gameLoop);
         };
 
         const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setIsPaused(!isPaused);
+                return;
+            }
             switch(e.key) {
                 case 'ArrowUp': window.player.controls.up = true; break;
                 case 'ArrowDown': window.player.controls.down = true; break;
@@ -388,12 +451,18 @@ function Game() {
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
             document.removeEventListener('keyup', handleKeyUp);
+            if (gameLoopRef.current) {
+                cancelAnimationFrame(gameLoopRef.current);
+            }
         };
     }, []);
 
     return (
         <div className="game-container">
             <div className="game-ui">
+                <button className="pause-button" onClick={() => setIsPaused(!isPaused)}>
+                    {isPaused ? 'Resume' : 'Pause'}
+                </button>
                 <div className="health-container">
                     <div className="health-bar-bg">
                         <div id="health-bar" className="health-bar"></div>
@@ -405,7 +474,29 @@ function Game() {
                 </div>
             </div>
             <canvas ref={canvasRef} id="gameCanvas"></canvas>
+            {isPaused && (
+                <div className="pause-overlay">
+                    <div className="pause-menu">
+                        <h2>Game Paused</h2>
+                        <button onClick={() => setIsPaused(false)}>Resume</button>
+                    </div>
+                </div>
+            )}
+            {countdown > 0 && (
+                <div className="countdown-overlay">
+                    <div className="countdown">
+                        {isLevelCountdown ? (
+                            <h2>Next Level in: {Math.ceil(countdown)}s</h2>
+                        ) : (
+                            <h2>Game starts in: {countdown}s</h2>
+                        )}
+                    </div>
+                </div>
+            )}
             <div className="controls">
+                <div className="level-counter">
+                    <h3>Level: {level}</h3>
+                </div>
                 <div className="player-controls">
                     <p>Controls:</p>
                     <p>Arrow keys to move and aim</p>
