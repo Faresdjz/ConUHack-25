@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './GameUI.css';
 
 export function HealthBar() {
@@ -80,11 +80,56 @@ Inventory.propTypes = {
     })).isRequired
 };
 
+export function GameOver({ score, onRestart, show }) {
+    if (!show) return null;
+
+    return (
+        <div className="game-over-overlay">
+            <div className="game-over-popup">
+                <h2>Game Over!</h2>
+                <p>Your Score: ${score}</p>
+                <button className="restart-button" onClick={onRestart}>
+                    Play Again
+                </button>
+            </div>
+        </div>
+    );
+}
+
+GameOver.propTypes = {
+    score: PropTypes.number.isRequired,
+    onRestart: PropTypes.func.isRequired,
+    show: PropTypes.bool.isRequired
+};
+
 export function GameUI({ money }) {
+    const [showGameOver, setShowGameOver] = useState(false);
+    const [finalScore, setFinalScore] = useState(0);
+
+    useEffect(() => {
+        window.gameOver = (score) => {
+            setFinalScore(score);
+            setShowGameOver(true);
+        };
+    }, []);
+
+    const handleRestart = () => {
+        setShowGameOver(false);
+        if (window.player) {
+            window.player.health = 100;
+            window.player.money = 100;
+        }
+    };
+
     return (
         <div className="game-ui">
             <HealthBar />
             <MoneyCounter money={money} />
+            <GameOver 
+                score={finalScore}
+                onRestart={handleRestart}
+                show={showGameOver}
+            />
         </div>
     );
 }

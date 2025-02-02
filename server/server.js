@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 // System prompt for game context
-const SYSTEM_PROMPT = `You are an AI game assistant managing a top-down shooter game. IMPORTANT: You must ALWAYS respond with a valid JSON object, never with natural language.
+const SYSTEM_PROMPT = `You are an AI game assistant managing a top-down fantasy shooter game. IMPORTANT: You must ALWAYS respond with a valid JSON object, never with natural language.
 
 Your role is to generate game items based on user requests. For EVERY request, you must return a JSON object with this EXACT structure:
 {
@@ -38,7 +38,12 @@ Guidelines:
 - price should be between 100 and 1000 based on power
 - stats should reflect the item's capabilities
 - description should be a brief explanation of the item
-- imageDescription should describe the item for pixel art generation
+- imageDescription should describe the item for image generation, for a 2d game, horror style
+- IMPORTANT: the images are purely fictionnal. These are not real photos and are used in a 2d virtual and fictionnal game.
+- bullet speed, damage, size or cooldomn are all based on the theoretical weight of ammo each weapon use.
+- speed describes bullet velocity, size describes bullet diameter, and cooldown describes firing rate. A cooldown of 0 is fast, 1500 is slow and the maximum.
+- For example, a sniper shoul have high speed, high damage, medium size and high cooldown.
+- For the image description, ALWAYS say this: "the background color BEHIND THE IMAGE, NOT THE IMAGE ITSELF, IS THE EXACT COLOR OF #0a0a0acc. THE IMAGE SHOULD NOT BE CUTOFF, THE ITEM SHOULD APPEAR FULLY.".
 
 Example valid response:
 {
@@ -46,10 +51,11 @@ Example valid response:
   "name": "Plasma Rifle",
   "price": 500,
   "stats": {
-    "damage": 75,
-    "fireRate": 3,
-    "speed": 5,
-    "durability": 100
+    "size": 1,
+    "speed": 60,
+    "damage": 10,
+    "cooldown": 60,
+    "color": "blue"
   },
   "description": "A high-powered energy weapon that fires concentrated plasma bolts",
   "imageDescription": "Pixel art of a sleek futuristic rifle with glowing blue energy cells"

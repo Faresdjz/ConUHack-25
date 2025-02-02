@@ -139,11 +139,11 @@ export function updateGame(ctx, canvas, enemies, moneyDrops) {
     document.getElementById('money-count').textContent = window.player.money;
 
     if (window.player.health <= 0) {
-        alert('Game Over! Your score: $' + window.player.money);
-        window.player.health = MAX_HEALTH;
-        window.player.money = 100;
-        enemies.length = 0;
-        moneyDrops.length = 0;
+        if (window.gameOver) {
+            window.gameOver(window.player.money);
+            enemies.length = 0;
+            moneyDrops.length = 0;
+        }
     }
 }
 

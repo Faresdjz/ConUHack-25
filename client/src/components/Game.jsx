@@ -38,7 +38,6 @@ function Game({ inventory, money }) {
         <div className="game-container">
             <GameUI money={money} />
             <canvas ref={canvasRef} id="gameCanvas"></canvas>
-            <Controls />
             <InventoryUI inventory={inventory} />
         </div>
     );
