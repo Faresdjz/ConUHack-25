@@ -38,7 +38,12 @@ function Inventory({ items }) {
             <h3>Inventory</h3>
             <div className="inventory-grid">
                 {items.map((item, index) => (
-                    <div key={index} className="inventory-item">
+                    <div 
+                        key={index} 
+                        className="inventory-item" 
+                        onClick={() => window.player.updateBulletStats(item.stats)}
+                        style={{ cursor: 'pointer' }}
+                    >
                         <div className="item-name">{item.name}</div>
                         <div className="item-stats">
                             <div>Damage: {item.stats.damage}</div>
