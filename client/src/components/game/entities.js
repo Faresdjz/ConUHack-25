@@ -9,13 +9,28 @@ export class Enemy {
         this.canvas = canvas;
         this.size = ENEMY_SIZE;
         this.hitboxSize = ENEMY_HITBOX_SIZE;
+        
+        // Load zombie image
+        this.image = new Image();
+        this.image.src = '/src/assets/zombie.png';
+        this.angle = 0; // Track rotation angle
     }
 
     draw() {
-        this.ctx.fillStyle = '#ff4444';
-        this.ctx.beginPath();
-        this.ctx.arc(this.x, this.y, this.size/2, 0, Math.PI * 2);
-        this.ctx.fill();
+        // Draw the zombie image
+        this.ctx.save();
+        this.ctx.translate(this.x, this.y);
+        this.ctx.rotate(this.angle);
+        
+        // Draw the image centered on the enemy's position
+        this.ctx.drawImage(
+            this.image,
+            -this.size/2,
+            -this.size/2,
+            this.size,
+            this.size
+        );
+        this.ctx.restore();
 
         // Health bar
         this.ctx.fillStyle = 'white';
@@ -25,9 +40,9 @@ export class Enemy {
     }
 
     moveTowards(targetX, targetY) {
-        const angle = Math.atan2(targetY - this.y, targetX - this.x);
-        this.x += Math.cos(angle) * ENEMY_SPEED;
-        this.y += Math.sin(angle) * ENEMY_SPEED;
+        this.angle = Math.atan2(targetY - this.y, targetX - this.x);
+        this.x += Math.cos(this.angle) * ENEMY_SPEED;
+        this.y += Math.sin(this.angle) * ENEMY_SPEED;
     }
 }
 
@@ -68,6 +83,10 @@ export class Player {
         this.lastHitTime = 0;
         this.isFlashing = false;
         
+        // Load player image
+        this.image = new Image();
+        this.image.src = '/src/assets/player.png';
+        
         // Default bullet properties
         this.bulletProps = {
             size: 5,
@@ -79,28 +98,39 @@ export class Player {
     }
 
     draw() {
-        // Draw player body with damage flash effect
-        this.ctx.fillStyle = this.isFlashing ? '#ff0000' : this.color;
-        this.ctx.beginPath();
-        this.ctx.arc(this.x, this.y, PLAYER_SIZE/2, 0, Math.PI * 2);
-        this.ctx.fill();
-
-        // Draw direction indicator
-        this.ctx.fillStyle = '#fff';
-        let indicatorX = this.x;
-        let indicatorY = this.y;
-        const offset = PLAYER_SIZE/2 - 5;
-        
-        switch(this.direction) {
-            case 'right': indicatorX += offset; break;
-            case 'left': indicatorX -= offset; break;
-            case 'up': indicatorY -= offset; break;
-            case 'down': indicatorY += offset; break;
+        // Draw player image with damage flash effect
+        if (this.isFlashing) {
+            this.ctx.globalAlpha = 0.5;
+            this.ctx.fillStyle = '#ff0000';
+            this.ctx.beginPath();
+            this.ctx.arc(this.x, this.y, PLAYER_SIZE/2, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.globalAlpha = 1.0;
         }
         
-        this.ctx.beginPath();
-        this.ctx.arc(indicatorX, indicatorY, 5, 0, Math.PI * 2);
-        this.ctx.fill();
+        // Draw the player image
+        this.ctx.save();
+        this.ctx.translate(this.x, this.y);
+        
+        // Rotate based on direction
+        let rotation = 0;
+        switch(this.direction) {
+            case 'right': rotation = 0; break;
+            case 'left': rotation = Math.PI; break;
+            case 'up': rotation = -Math.PI/2; break;
+            case 'down': rotation = Math.PI/2; break;
+        }
+        this.ctx.rotate(rotation);
+        
+        // Draw the image centered on the player's position
+        this.ctx.drawImage(
+            this.image,
+            -PLAYER_SIZE/2,
+            -PLAYER_SIZE/2,
+            PLAYER_SIZE,
+            PLAYER_SIZE
+        );
+        this.ctx.restore();
 
         // Draw bullets
         this.bullets.forEach(bullet => {

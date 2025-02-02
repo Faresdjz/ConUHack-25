@@ -41,7 +41,7 @@ function App() {
   return (
     <div className="app">
       <header>
-        <h1>AI Chat Assistant & Game</h1>
+        <h1>Autonomous Extermination </h1>
       </header>
       <main className="main-content">
         <Game inventory={gameState.inventory} money={gameState.money} />
