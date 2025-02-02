@@ -58,7 +58,7 @@ export class Player {
         this.color = color;
         this.controls = controls;
         this.health = MAX_HEALTH;
-        this.money = 0;
+        this.money = 2000;
         this.bullets = [];
         this.lastShot = 0;
         this.ctx = ctx;

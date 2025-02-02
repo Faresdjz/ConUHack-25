@@ -11,14 +11,18 @@ export function HealthBar() {
     );
 }
 
-export function MoneyCounter() {
+export function MoneyCounter({ money }) {
     return (
         <div className="money-container">
             <span className="money-symbol">$</span>
-            <span id="money-count"></span>
+            <span id="money-count">{money}</span>
         </div>
     );
 }
+
+MoneyCounter.propTypes = {
+    money: PropTypes.number.isRequired
+};
 
 export function Controls() {
     return (
@@ -68,14 +72,18 @@ Inventory.propTypes = {
     })).isRequired
 };
 
-export function GameUI() {
+export function GameUI({ money }) {
     return (
         <div className="game-ui">
             <HealthBar />
-            <MoneyCounter />
+            <MoneyCounter money={money} />
         </div>
     );
 }
+
+GameUI.propTypes = {
+    money: PropTypes.number.isRequired
+};
 
 export function InventoryUI({ inventory = [] }) {
     return (

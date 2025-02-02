@@ -4,7 +4,7 @@ import { GameUI, Controls, InventoryUI } from './game/GameUI';
 import { setupGame, updateGame, handleKeyDown, handleKeyUp } from './game/gameLogic';
 import './Game.css';
 
-function Game({ inventory }) {
+function Game({ inventory, money }) {
     const canvasRef = useRef(null);
     const gameStateRef = useRef({ enemies: [], moneyDrops: [] });
 
@@ -36,7 +36,7 @@ function Game({ inventory }) {
 
     return (
         <div className="game-container">
-            <GameUI />
+            <GameUI money={money} />
             <canvas ref={canvasRef} id="gameCanvas"></canvas>
             <Controls />
             <InventoryUI inventory={inventory} />
@@ -52,7 +52,8 @@ Game.propTypes = {
             firerate: PropTypes.number,
             damage: PropTypes.number
         })
-    })).isRequired
+    })).isRequired,
+    money: PropTypes.number.isRequired
 };
 
 export default Game;
